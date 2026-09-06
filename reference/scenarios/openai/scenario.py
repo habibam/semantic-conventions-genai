@@ -518,27 +518,34 @@ def run_chat_tool_call_reference(client):
 def run_security_guardrail_reference():
     """Scenario: application-level guardrail before a chat request."""
     print("  [security_guardrail] application-level input guardrail (reference implementation)")
-    request_model = "gpt-4o-mini"
     input_text = "Please email jane@example.com about the travel booking."
     sanitized_text = "Please email [REDACTED] about the travel booking."
     # Reference-only fixed key for deterministic output. Production
     # instrumentations should use a secret HMAC key, not a raw content hash.
     input_hash = f"hmac-sha256:{hmac.new(REFERENCE_HASH_KEY, input_text.encode('utf-8'), hashlib.sha256).hexdigest()}"
-    parent_attrs = {
-        "gen_ai.operation.name": "chat",
-        "gen_ai.provider.name": "openai",
-        "gen_ai.request.model": request_model,
+    guardrail_attrs = {
+        "gen_ai.operation.name": "run_guardrail",
+        "gen_ai.guardrail.action.type": "modify",
+        "gen_ai.guardrail.security.content.input.hash": input_hash,
+        "gen_ai.guardrail.security.content.modified": True,
+        "gen_ai.guardrail.security.external_finding_id": "finding_pii_001",
+        "gen_ai.guardrail.component.name": "Custom PII Filter",
+        "gen_ai.provider.name": "azure.ai.content_safety",
+        "gen_ai.guardrail.security.policy.id": "policy_pii_v2",
+        "gen_ai.guardrail.security.policy.rule.id": "rule-email",
+        "gen_ai.guardrail.security.risk.category": "sensitive_info_disclosure",
+        "gen_ai.guardrail.security.risk.score": 0.92,
+        "gen_ai.guardrail.target.id": "msg_user_1",
+        "gen_ai.guardrail.target.subtype": "llm",
+        "gen_ai.guardrail.target.type": "input",
+        "gen_ai.guardrail.verdict.code": "PII_EMAIL",
+        "gen_ai.guardrail.verdict.reason": "PII detected in user message",
+        "gen_ai.guardrail.verdict.type": "warn",
+        "gen_ai.conversation.id": "conv_security_reference",
     }
-    with _reference_tracer.start_as_current_span("chat gpt-4o-mini", attributes=parent_attrs) as parent_span:
-        parent_span.set_attribute(
-            "gen_ai.input.messages",
-            json.dumps([{"role": "user", "parts": [{"type": "text", "content": sanitized_text}]}]),
-        )
-        guardrail_attrs = {
-            "gen_ai.operation.name": "run_guardrail",
+    with _reference_tracer.start_as_current_span("run_guardrail Custom PII Filter", attributes=guardrail_attrs):
+        finding_attrs = {
             "gen_ai.guardrail.action.type": "modify",
-            "gen_ai.guardrail.security.content.input.hash": input_hash,
-            "gen_ai.guardrail.security.content.modified": True,
             "gen_ai.guardrail.security.external_finding_id": "finding_pii_001",
             "gen_ai.guardrail.component.name": "Custom PII Filter",
             "gen_ai.provider.name": "azure.ai.content_safety",
@@ -552,31 +559,13 @@ def run_security_guardrail_reference():
             "gen_ai.guardrail.verdict.code": "PII_EMAIL",
             "gen_ai.guardrail.verdict.reason": "PII detected in user message",
             "gen_ai.guardrail.verdict.type": "warn",
-            "gen_ai.conversation.id": "conv_security_reference",
         }
-        with _reference_tracer.start_as_current_span("run_guardrail Custom PII Filter", attributes=guardrail_attrs):
-            finding_attrs = {
-                "gen_ai.guardrail.action.type": "modify",
-                "gen_ai.guardrail.security.external_finding_id": "finding_pii_001",
-                "gen_ai.guardrail.component.name": "Custom PII Filter",
-                "gen_ai.provider.name": "azure.ai.content_safety",
-                "gen_ai.guardrail.security.policy.id": "policy_pii_v2",
-                "gen_ai.guardrail.security.policy.rule.id": "rule-email",
-                "gen_ai.guardrail.security.risk.category": "sensitive_info_disclosure",
-                "gen_ai.guardrail.security.risk.score": 0.92,
-                "gen_ai.guardrail.target.id": "msg_user_1",
-                "gen_ai.guardrail.target.subtype": "llm",
-                "gen_ai.guardrail.target.type": "input",
-                "gen_ai.guardrail.verdict.code": "PII_EMAIL",
-                "gen_ai.guardrail.verdict.reason": "PII detected in user message",
-                "gen_ai.guardrail.verdict.type": "warn",
-            }
-            reference_event_logger().emit(
-                event_name="gen_ai.guardrail.security.finding",
-                body="Security finding",
-                attributes=finding_attrs,
-            )
-        print(f"    -> {input_text} -> {sanitized_text}")
+        reference_event_logger().emit(
+            event_name="gen_ai.guardrail.security.finding",
+            body="Security finding",
+            attributes=finding_attrs,
+        )
+    print(f"    -> {input_text} -> {sanitized_text}")
 
 
 def run_remote_security_guardrail_reference():
