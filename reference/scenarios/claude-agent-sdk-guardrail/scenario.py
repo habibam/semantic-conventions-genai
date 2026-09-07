@@ -69,9 +69,7 @@ async def _guardrail_hook(input_data, tool_use_id, context):
         if verdict != "allow":
             span.set_attribute("gen_ai.guardrail.verdict.reason", reason)
             # Security overlay: a destructive tool call maps to excessive agency.
-            span.set_attribute(
-                "gen_ai.guardrail.security.risk.category", "excessive_agency"
-            )
+            span.set_attribute("gen_ai.guardrail.security.risk.category", "excessive_agency")
         print(f"    -> guardrail {verdict} for {tool_name}: {reason or 'ok'}")
 
     if verdict == "deny":

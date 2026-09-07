@@ -153,9 +153,7 @@ def _emit_blocked_result(reason: str) -> None:
             "total_cost_usd": 0.001,
             "usage": {"input_tokens": 12, "output_tokens": 6},
             "modelUsage": {},
-            "permission_denials": [
-                {"tool_name": "Bash", "tool_use_id": TOOL_USE_ID}
-            ],
+            "permission_denials": [{"tool_name": "Bash", "tool_use_id": TOOL_USE_ID}],
         }
     )
 
