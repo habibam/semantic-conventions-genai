@@ -20,7 +20,7 @@ attributes depend on system-specific knowledge and are therefore opt-in.
 - [What each system exposes](#what-each-system-exposes)
 - [Property to attribute mapping](#property-to-attribute-mapping)
 - [Capturability findings](#capturability-findings)
-- [Honest gaps](#honest-gaps)
+- [Gaps](#gaps)
 
 <!-- tocstop -->
 
@@ -103,7 +103,7 @@ finding and is populated only where a system surfaces that information.
 Classifying each mapping by how directly the boundary yields it (`direct` when it
 is readable at the boundary, `derivable` from library-owned semantics, `weak`
 when it needs app-specific naming or an enum guess, `capture gap` when the
-boundary cannot honestly produce it) gives a consistent picture across systems:
+boundary cannot produce it) gives a consistent picture across systems:
 
 - **Base attributes are `direct` or `derivable`.** Stage gives `target.type`; the
   result object gives `verdict.type`; the wrapper behavior gives `action.type`;
@@ -118,7 +118,7 @@ This is the concrete evidence for the design: start from a generic guardrail
 base that generic instrumentation can populate, and treat the security overlay as
 an opt-in layer that a system populates only when it exposes that information.
 
-## Honest gaps
+## Gaps
 
 - Several systems distinguish only allow versus deny. Richer verdict and action
   members (`modify`, `warn`, `escalate`) are demonstrated by systems that expose
@@ -127,7 +127,7 @@ an opt-in layer that a system populates only when it exposes that information.
 - `gen_ai.guardrail.security.content.modified` and
   `gen_ai.guardrail.security.external_finding_id` are capture gaps for systems
   that block rather than rewrite and do not emit an external finding. They are
-  left unset there rather than fabricated.
+  left unset there rather than populated with a guessed value.
 - Risk category is rarely a native field. It is derived from per-check knowledge,
   which is why it lives in the opt-in security overlay.
 

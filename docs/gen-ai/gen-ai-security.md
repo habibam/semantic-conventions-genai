@@ -28,6 +28,10 @@ rules, and external security systems. Examples include content safety services,
 model armor services, policy engines, DLP filters, prompt-injection detectors,
 and custom application controls.
 
+For the guardrail systems surveyed while defining these attributes, and how each
+system's properties map onto them, see
+[Evaluated guardrail systems](gen-ai-guardrail-systems.md).
+
 Use a
 `gen_ai.run_guardrail.client` span when the guardrail evaluation is performed
 by another process or service, and a `gen_ai.run_guardrail.internal` span when
