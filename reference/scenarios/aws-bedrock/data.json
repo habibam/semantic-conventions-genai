@@ -13,6 +13,16 @@
       "server.address",
       "server.port"
     ],
+    "gen_ai.client.embeddings": [
+      "gen_ai.embeddings.dimension.count",
+      "gen_ai.operation.name",
+      "gen_ai.provider.name",
+      "gen_ai.request.encoding_formats",
+      "gen_ai.request.model",
+      "gen_ai.usage.input_tokens",
+      "server.address",
+      "server.port"
+    ],
     "gen_ai.client.inference": [
       "gen_ai.input.messages",
       "gen_ai.operation.name",
@@ -25,16 +35,6 @@
       "gen_ai.tool.definitions",
       "gen_ai.usage.input_tokens",
       "gen_ai.usage.output_tokens",
-      "server.address",
-      "server.port"
-    ],
-    "gen_ai.embeddings.client": [
-      "gen_ai.embeddings.dimension.count",
-      "gen_ai.operation.name",
-      "gen_ai.provider.name",
-      "gen_ai.request.encoding_formats",
-      "gen_ai.request.model",
-      "gen_ai.usage.input_tokens",
       "server.address",
       "server.port"
     ]
@@ -70,17 +70,22 @@
     "gen_ai.client.apply_guardrail.duration": [
       "gen_ai.guardrail.component.name",
       "gen_ai.provider.name"
+    ],
+    "gen_ai.client.embeddings.duration": [
+      "gen_ai.operation.name",
+      "gen_ai.provider.name",
+      "gen_ai.request.model",
+      "server.address",
+      "server.port"
+    ],
+    "gen_ai.client.embeddings.operation.input_tokens": [
+      "gen_ai.operation.name",
+      "gen_ai.provider.name",
+      "gen_ai.request.model",
+      "server.address",
+      "server.port"
     ]
   },
-  "findings": [
-    {
-      "id": "genai_expected_attribute_missing",
-      "message": "Span 'embeddings amazon.titan-embed-text-v2:0' (operation 'embeddings') is missing expected attribute 'gen_ai.response.model'",
-      "context": {
-        "missing_attribute": "gen_ai.response.model",
-        "operation": "embeddings"
-      }
-    }
-  ],
+  "findings": [],
   "entities": {}
 }
